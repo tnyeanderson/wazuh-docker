@@ -3,15 +3,18 @@ FROM phusion/baseimage:latest
 
 ARG FILEBEAT_VERSION=7.3.0
 
-ARG WAZUH_VERSION=3.9.5-1
+#ARG WAZUH_VERSION=3.9.5-1
+ARG WAZUH_VERSION=3.10.0-1
 
 ENV API_USER="foo" \
    API_PASS="bar"
 
-ARG TEMPLATE_VERSION="v3.9.5"
+#ARG TEMPLATE_VERSION="v3.9.5"
+ARG TEMPLATE_VERSION="v3.10.0-rc1"
 
 # Set repositories.
-RUN set -x && echo "deb https://packages.wazuh.com/3.x/apt/ stable main" | tee /etc/apt/sources.list.d/wazuh.list && \
+#RUN set -x && echo "deb https://packages.wazuh.com/3.x/apt/ stable main" | tee /etc/apt/sources.list.d/wazuh.list && \
+RUN set -x && echo "deb https://packages-dev.wazuh.com/pre-release/apt/ unstable main" | tee /etc/apt/sources.list.d/wazuh.list && \
    curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | apt-key add - && \
    curl --silent --location https://deb.nodesource.com/setup_8.x | bash - && \
    echo "postfix postfix/mailname string wazuh-manager" | debconf-set-selections && \

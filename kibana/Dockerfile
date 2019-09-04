@@ -1,12 +1,14 @@
 # Wazuh Docker Copyright (C) 2019 Wazuh Inc. (License GPLv2)
 FROM docker.elastic.co/kibana/kibana:7.3.0
 ARG ELASTIC_VERSION=7.3.0
-ARG WAZUH_VERSION=3.9.5
+#ARG WAZUH_VERSION=3.9.5
+ARG WAZUH_VERSION=3.10.0-1
 ARG WAZUH_APP_VERSION="${WAZUH_VERSION}_${ELASTIC_VERSION}"
 
 USER root
 
-ADD  https://packages.wazuh.com/wazuhapp/wazuhapp-${WAZUH_APP_VERSION}.zip /tmp
+#ADD  https://packages.wazuh.com/wazuhapp/wazuhapp-${WAZUH_APP_VERSION}.zip /tmp
+ADD   https://packages-dev.wazuh.com/pre-release/app/kibana/wazuhapp-${WAZUH_APP_VERSION}.zip /tmp
 
 RUN /usr/share/kibana/bin/kibana-plugin install --allow-root file:///tmp/wazuhapp-${WAZUH_APP_VERSION}.zip 
 RUN rm -rf /tmp/wazuhapp-${WAZUH_APP_VERSION}.zip
