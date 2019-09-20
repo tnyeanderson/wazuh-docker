@@ -33,6 +33,7 @@ RUN mkdir /entrypoint-scripts
 COPY config/entrypoint.sh /entrypoint.sh
 COPY config/00-wazuh.sh /entrypoint-scripts/00-wazuh.sh
 COPY config/01-config_filebeat.sh /entrypoint-scripts/01-config_filebeat.sh
+COPY migration/backup_data.sh /entrypoint-scripts/backup_data.sh
 
 # Sync calls are due to https://github.com/docker/docker/issues/9547
 RUN chmod 755 /init.bash && \
@@ -42,7 +43,8 @@ RUN chmod 755 /init.bash && \
    dpkg -i filebeat-${FILEBEAT_VERSION}-amd64.deb && rm -f filebeat-${FILEBEAT_VERSION}-amd64.deb && \
    chmod 755 /entrypoint.sh && \
    chmod 755 /entrypoint-scripts/00-wazuh.sh && \
-   chmod 755 /entrypoint-scripts/01-config_filebeat.sh
+   chmod 755 /entrypoint-scripts/01-config_filebeat.sh && \
+   chmod 755 /entrypoint-scripts/backup_data.sh
 
 COPY config/filebeat.yml /etc/filebeat/
 RUN chmod go-w /etc/filebeat/filebeat.yml
