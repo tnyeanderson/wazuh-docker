@@ -1,9 +1,9 @@
 # Wazuh Docker Copyright (C) 2019 Wazuh Inc. (License GPLv2)
-FROM phusion/baseimage:master
+FROM phusion/baseimage:latest
 
 # Arguments
-ARG FILEBEAT_VERSION=7.3.0
-ARG WAZUH_VERSION=3.9.5-1
+ARG FILEBEAT_VERSION=7.3.2
+ARG WAZUH_VERSION=3.10.0-1
 
 # Environment variables
 ENV API_USER="foo" \
@@ -36,7 +36,7 @@ RUN set -x && \
     rm /var/ossec/var/run/* && \
     curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-${FILEBEAT_VERSION}-amd64.deb && \
     dpkg -i filebeat-${FILEBEAT_VERSION}-amd64.deb && rm -f filebeat-${FILEBEAT_VERSION}-amd64.deb && \
-    curl -so /etc/filebeat/wazuh-template.json https://raw.githubusercontent.com/wazuh/wazuh/v3.9.5/extensions/elasticsearch/7.x/wazuh-template.json && \
+    curl -so /etc/filebeat/wazuh-template.json https://raw.githubusercontent.com/wazuh/wazuh/v3.10.0/extensions/elasticsearch/7.x/wazuh-template.json && \
     chmod go+r /etc/filebeat/wazuh-template.json && \
     curl -s https://packages.wazuh.com/3.x/filebeat/wazuh-filebeat-0.1.tar.gz | tar -xvz -C /usr/share/filebeat/module && \
     mkdir -p /usr/share/filebeat/module/wazuh && \
@@ -97,7 +97,6 @@ COPY config/entrypoint.sh /entrypoint.sh
 COPY config/01-wazuh.sh /entrypoint-scripts/01-wazuh.sh
 
 # Migration scripts
-COPY migration/data_dirs.env /data_dirs.env
 COPY migration/02-volume_loader.sh /entrypoint-scripts/02-volume_loader.sh
 
 RUN chmod 755 /entrypoint.sh && \
