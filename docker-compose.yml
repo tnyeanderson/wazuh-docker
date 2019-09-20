@@ -12,7 +12,27 @@ services:
       - "514:514/udp"
       - "55000:55000"
     volumes:
-      - '/mnt/wazuh/:/var/ossec/data:z'
+     - wazuh-docker_ossec_backup:/migration/ossec_backup:ro
+     - wazuh-docker_filebeat:/migration/filebeat_backup:ro
+     - wazuh-docker_filebeat-lib:/migration/filebeat-lib_backup:ro
+     - wazuh-docker_postfix:/migration/postfix_backup:ro
+
+  wazuh-worker:
+    build: wazuh
+    hostname: wazuh-worker
+    restart: always
+    ports:
+      - "1514/udp"
+      - "514/udp"
+      - "1515"
+      - "1516"
+      - "55000"
+    volumes:
+     - wazuh-docker_ossec_backup2:/migration/ossec_backup:ro
+     - wazuh-docker_filebeat2:/migration/filebeat_backup:ro
+     - wazuh-docker_filebeat-lib2:/migration/filebeat-lib_backup:ro
+     - wazuh-docker_postfix2:/migration/postfix_backup:ro
+
   elasticsearch:
     build: elasticsearch
     hostname: elasticsearch
@@ -54,3 +74,21 @@ services:
       - kibana
     links:
       - kibana:kibana
+
+volumes:
+  wazuh-docker_ossec_backup:
+    external: true
+  wazuh-docker_filebeat:
+    external: true
+  wazuh-docker_filebeat-lib:
+    external: true
+  wazuh-docker_postfix:
+    external: true
+  wazuh-docker_ossec_backup2:
+    external: true
+  wazuh-docker_filebeat2:
+    external: true
+  wazuh-docker_filebeat-lib2:
+    external: true
+  wazuh-docker_postfix2:
+    external: true
