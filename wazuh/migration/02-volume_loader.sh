@@ -11,13 +11,6 @@ source /data_dirs.env
 # For more information please check:
 ##############################################################################
 
-declare -A custom_paths
-
-custom_paths+=( ["/migration/ossec_backup/"]=/var/ossec/ )
-custom_paths+=( ["/migration/filebeat_backup/"]=/etc/filebeat/ )
-custom_paths+=( ["/migration/filebeat-lib_backup/"]=/var/lib/filebeat/ )
-custom_paths+=( ["/migration/postfix_backup/"]=/etc/postfix/ )
-
 ### Auxiliar methods
 
 print() {
