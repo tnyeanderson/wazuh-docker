@@ -3,7 +3,7 @@ version: '2'
 
 services:
   wazuh:
-    image: wazuh/wazuh:3.9.5_7.2.1
+    build: wazuh
     hostname: wazuh-manager
     restart: always
     ports:
@@ -11,6 +11,29 @@ services:
       - "1515:1515"
       - "514:514/udp"
       - "55000:55000"
+    volumes:
+     - ./master_configuration.sh:/entrypoint-scripts/master_configuration.sh
+     - ossec_backup:/backup/ossec_backup
+     - filebeat:/backup/filebeat_backup
+     - filebeat-lib:/backup/filebeat-lib_backup
+     - postfix:/backup/postfix_backup
+
+  wazuh-worker:
+    build: wazuh
+    hostname: wazuh-worker
+    restart: always
+    ports:
+      - "1514/udp"
+      - "514/udp"
+      - "1515"
+      - "1516"
+      - "55000"
+    volumes:
+      - ./worker_configuration.sh:/entrypoint-scripts/worker_configuration.sh
+      - ossec_backup2:/backup/ossec_backup
+      - filebeat2:/backup/filebeat
+      - filebeat-lib2:/backup/filebeat-lib
+      - postfix2:/backup/postfix
 
   elasticsearch:
     image: wazuh/wazuh-elasticsearch:3.9.5_7.2.1
@@ -52,3 +75,13 @@ services:
       - kibana
     links:
       - kibana:kibana
+
+volumes:
+  ossec_backup:
+  filebeat:
+  filebeat-lib:
+  postfix:
+  ossec_backup2:
+  filebeat2:
+  filebeat-lib2:
+  postfix2:
