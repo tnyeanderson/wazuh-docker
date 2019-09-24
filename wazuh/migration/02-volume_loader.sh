@@ -1,6 +1,8 @@
 #!/bin/bash
 
-source /data_dirs.env
+## Path were the volume with data to be restored is mounted
+
+BACKUP_DATA_PATH=/migration
 
 ##############################################################################
 # Copy will be executed from the custom mounting path (key) 
@@ -10,6 +12,13 @@ source /data_dirs.env
 # Please ensure the key path is correctly mounted in the container
 # For more information please check:
 ##############################################################################
+
+declare -A custom_paths
+
+custom_paths+=( ["${BACKUP_DATA_PATH}/ossec_backup/"]=/var/ossec/ )
+custom_paths+=( ["${BACKUP_DATA_PATH}/filebeat_backup/"]=/etc/filebeat/ )
+custom_paths+=( ["${BACKUP_DATA_PATH}/filebeat-lib_backup/"]=/var/lib/filebeat/ )
+custom_paths+=( ["${BACKUP_DATA_PATH}/postfix_backup/"]=/etc/postfix/ )
 
 ### Auxiliar methods
 
@@ -32,13 +41,6 @@ exec_cmd_stdout() {
 }
 
 ### Restoring directories 
-
-declare -A custom_paths
-
-custom_paths+=( ["/migration/ossec_backup/"]=/var/ossec/ )
-custom_paths+=( ["/migration/filebeat_backup/"]=/etc/filebeat/ )
-custom_paths+=( ["/migration/filebeat-lib_backup/"]=/var/lib/filebeat/ )
-custom_paths+=( ["/migration/postfix_backup/"]=/etc/postfix/ )
 
 for sourcedir in "${!custom_paths[@]}"; do
     if [[ ! -e "${custom_paths[${sourcedir}]}" ]]
