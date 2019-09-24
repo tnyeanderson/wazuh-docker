@@ -52,10 +52,10 @@ for sourcedir in "${!custom_paths[@]}"; do
     if [[ -e "${sourcedir}" ]]
     then
         if [[ -d "${sourcedir}" ]]; then
-            print "BACKUP: Copying data from folder ${sourcedir} in 3.9 volume to ${custom_paths[${sourcedir}]}"
+            print "BACKUP: Copying data from folder ${sourcedir} to ${custom_paths[${sourcedir}]}"
             exec_cmd "cp -pr ${sourcedir}* ${custom_paths[${sourcedir}]}"
         elif [[ -f "${sourcedir}" ]]; then
-            print "BACKUP: Copying file ${sourcedir} in 3.9 volume to ${custom_paths[${sourcedir}]}"
+            print "BACKUP: Copying file ${sourcedir} to ${custom_paths[${sourcedir}]}"
             exec_cmd "cp -pr ${sourcedir} ${custom_paths[${sourcedir}]}"
         fi
     else
