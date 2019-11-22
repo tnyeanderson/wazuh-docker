@@ -42,33 +42,27 @@ RUN curl -s https://packages.wazuh.com/3.x/filebeat/${WAZUH_FILEBEAT_MODULE} | t
 
 RUN yum -y install epel-release && yum -y install htop && yum clean all && rm -rf /var/cache/yum
 
-# Adding first run script and entrypoint
-COPY config/data_dirs.env /data_dirs.env
-COPY config/init.bash /init.bash
-RUN mkdir /entrypoint-scripts
-COPY config/entrypoint.sh /entrypoint.sh
-COPY config/00-wazuh.sh config/01-config_filebeat.sh /entrypoint-scripts/
-
-
-EXPOSE 55000/tcp 1514/udp 1515/tcp 514/udp 1516/tcp
-
-# Sync calls are due to https://github.com/docker/docker/issues/9547
-RUN chmod 755 /init.bash && \
-   sync && /init.bash && \
-   sync && rm /init.bash && \
-   chmod 755 /entrypoint.sh && \
-   chmod 755 /entrypoint-scripts/00-wazuh.sh && \
-   chmod 755 /entrypoint-scripts/01-config_filebeat.sh
-
-COPY config/filebeat.yml /etc/filebeat/
-RUN chmod go-w /etc/filebeat/filebeat.yml
-
 RUN curl --fail --silent -L https://github.com/just-containers/s6-overlay/releases/download/v1.21.8.0/s6-overlay-amd64.tar.gz \
     -o /tmp/s6-overlay-amd64.tar.gz && \
     tar xzf /tmp/s6-overlay-amd64.tar.gz -C / --exclude="./bin" && \
     tar xzf /tmp/s6-overlay-amd64.tar.gz -C /usr ./bin && \
     rm  /tmp/s6-overlay-amd64.tar.gz
 
-COPY ./services /etc/services.d/
+# Adding first run script and entrypoint
+COPY config/data_dirs.env /data_dirs.env
+COPY config/init.bash /init.bash
+
+# Sync calls are due to https://github.com/docker/docker/issues/9547
+RUN chmod 755 /init.bash && \
+   sync && /init.bash && \
+   sync && rm /init.bash
+
+COPY config/filebeat.yml /etc/filebeat/
+
+RUN chmod go-w /etc/filebeat/filebeat.yml
+
+COPY config/etc/ /etc/
+
+EXPOSE 55000/tcp 1514/udp 1515/tcp 514/udp 1516/tcp
 
 ENTRYPOINT [ "/init" ]
