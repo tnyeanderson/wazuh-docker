@@ -1,0 +1,15 @@
+#!/usr/bin/with-contenv sh
+echo >&2 "Init script"
+
+# It will run every .sh script located in entrypoint-scripts folder in lexicographical order
+for script in `ls /entrypoint-scripts/*.sh | sort -n`; do
+  bash "$script"
+done
+
+echo """
+ _____ _   _ ____    ___ _   _ ___ _____ 
+| ____| \ | |  _ \  |_ _| \ | |_ _|_   _|
+|  _| |  \| | | | |  | ||  \| || |  | |  
+| |___| |\  | |_| |  | || |\  || |  | |  
+|_____|_| \_|____/  |___|_| \_|___| |_|  
+"""
