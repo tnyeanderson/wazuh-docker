@@ -1,5 +1,0 @@
-#!/usr/bin/with-contenv bash
-echo >&2 "starting Manager"
-
-/var/ossec/bin/ossec-control start
-sleep infinity

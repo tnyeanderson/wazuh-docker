@@ -1,0 +1,3 @@
+#!/bin/bash
+
+/var/ossec/bin/ossec-control start 
