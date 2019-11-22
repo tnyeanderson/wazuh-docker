@@ -109,11 +109,3 @@ change_user="node htpasswd -b -c user $API_USER $API_PASS"
 eval $change_user
 
 popd
-
-echo """
- _         _  _   
-(_) _ __  (_)| |_ 
-| || '_ \ | || __|
-| || | | || || |_ 
-|_||_| |_||_| \__|
-"""
