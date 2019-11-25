@@ -1,8 +1,14 @@
-#!/bin/bash
-# Wazuh Docker Copyright (C) 2019 Wazuh Inc. (License GPLv2)
+#!/usr/bin/bash
+echo >&2 "starting Filebeat"
+sleep 1
+echo "START FILEBEAT"
+sleep 1
 
 # Wazuh container bootstrap. See the README for information of the environment
 # variables expected by this script.
+
+source /etc/envvars
+
 
 # Startup the services
 source /data_dirs.env
@@ -109,3 +115,38 @@ change_user="node htpasswd -b -c user $API_USER $API_PASS"
 eval $change_user
 
 popd
+
+set -e
+
+WAZUH_FILEBEAT_MODULE=wazuh-filebeat-0.1.tar.gz
+
+if [ "$ELASTICSEARCH_URL" != "" ]; then
+  >&2 echo "Customize Elasticsearch ouput IP"
+  sed -i 's|http://elasticsearch:9200|'$ELASTICSEARCH_URL'|g' /etc/filebeat/filebeat.yml
+fi
+
+# Configure filebeat.yml security settings
+
+if [ "$SSL_CERTIFICATE_AUTHORITIES" != "" ]; then
+  >&2 echo "Configuring Certificate Authorities."
+  sed -i 's|#ssl.certificate_authorities:|'ssl.certificate_authorities:\ [\"$SSL_CERTIFICATE_AUTHORITIES\"]'|g' /etc/filebeat/filebeat.yml
+fi
+
+if [ "$USERNAME" != "" ]; then
+  >&2 echo "Configuring username."
+  sed -i 's|#username:|'username:\ \"$USERNAME\"'|g' /etc/filebeat/filebeat.yml
+fi
+
+if [ "$PASSWORD" != "" ]; then
+  >&2 echo "Configuring password."
+  sed -i 's|#password:|'password:\ \"$PASSWORD\"'|g' /etc/filebeat/filebeat.yml
+fi
+
+chmod go-w /etc/filebeat/filebeat.yml || true
+chown root: /etc/filebeat/filebeat.yml || true
+
+# start manager
+/var/ossec/bin/ossec-control start
+
+# start filebeat
+exec /usr/share/filebeat/bin/filebeat -e -c /etc/filebeat/filebeat.yml -path.home /usr/share/filebeat -path.config /etc/filebeat -path.data /var/lib/filebeat -path.logs /var/log/filebeat

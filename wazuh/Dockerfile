@@ -42,12 +42,10 @@ RUN curl -s https://packages.wazuh.com/3.x/filebeat/${WAZUH_FILEBEAT_MODULE} | t
 
 RUN yum -y install epel-release && yum -y install htop && yum clean all && rm -rf /var/cache/yum
 
-ARG S6_VERSION="v1.22.1.0"
-RUN curl --fail --silent -L https://github.com/just-containers/s6-overlay/releases/download/${S6_VERSION}/s6-overlay-amd64.tar.gz \
-    -o /tmp/s6-overlay-amd64.tar.gz && \
-    tar xzf /tmp/s6-overlay-amd64.tar.gz -C / --exclude="./bin" && \
-    tar xzf /tmp/s6-overlay-amd64.tar.gz -C /usr ./bin && \
-    rm  /tmp/s6-overlay-amd64.tar.gz
+ARG RUNIT_VERSION="2.1.2-3"
+RUN curl -s https://packagecloud.io/install/repositories/imeyer/runit/script.rpm.sh | bash && \
+    yum install -y runit-${RUNIT_VERSION}.el7.centos.x86_64 && \
+    yum clean all && rm -rf /var/cache/yum
 
 # Adding first run script and entrypoint
 COPY config/data_dirs.env /data_dirs.env
@@ -63,7 +61,13 @@ COPY config/filebeat.yml /etc/filebeat/
 RUN chmod go-w /etc/filebeat/filebeat.yml
 
 COPY config/etc/ /etc/
+COPY config/runit-bootstrap.sh /
+RUN chmod +x /etc/service/*/run && \
+    chmod +x /etc/service/*/finish && \
+    chmod +x /runit-bootstrap.sh
 
 EXPOSE 55000/tcp 1514/udp 1515/tcp 514/udp 1516/tcp
 
-ENTRYPOINT [ "/init" ]
+
+#ENTRYPOINT ["runsvdir",  "-P", "/etc/services.d"]
+ENTRYPOINT ["/runit-bootstrap.sh"]

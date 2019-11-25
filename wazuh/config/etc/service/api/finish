@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+echo >&2 "API exited."
+
+# terminate other services to exit from the container
+kill -TERM 1
